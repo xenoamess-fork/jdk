@@ -33,6 +33,7 @@
 #include "code/exceptionHandlerTable.hpp"
 #include "compiler/compilerThread.hpp"
 #include "oops/methodData.hpp"
+#include "runtime/deoptimization.hpp"
 #include "runtime/thread.hpp"
 
 class CompileTask;
@@ -390,6 +391,8 @@ public:
   }
   VM_CLASSES_DO(VM_CLASS_FUNC)
 #undef VM_CLASS_FUNC
+
+  ciInstanceKlass* exception_instanceKlass_for_reason(Deoptimization::DeoptReason reason, bool aastore);
 
   ciInstance* NullPointerException_instance() {
     assert(_NullPointerException_instance != NULL, "initialization problem");
