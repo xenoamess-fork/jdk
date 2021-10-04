@@ -1094,7 +1094,10 @@ Handle SharedRuntime::find_callee_info_helper(vframeStream& vfst, Bytecodes::Cod
     bc = bytecode.invoke_code();
   } else {
     // This is for implicit exceptions with -XX:+OptimizeImplicitExceptions
-    // where we create an artificial call to *Exception::<init>()
+    // where we create an artificial call to *Exception::<init>().
+    // Notice that we don't catch the case here where we've created an
+    // implcit exception (e.g. NPE) for a regular invoke* bytecode.
+    // This special case is handled further down.
     bc = Bytecodes::_invokespecial;
   }
 
@@ -1130,6 +1133,14 @@ Handle SharedRuntime::find_callee_info_helper(vframeStream& vfst, Bytecodes::Cod
           break;
       }
     }
+  }
+  if (attached_method.not_null() &&
+      attached_method->name() == vmSymbols::object_initializer_name()) {
+    // If we've created an implicit NPE for an invoke* bytecode due to
+    // -XX:+OptimizeImplicitExceptions we have to adjust the bytecode to
+    // invokespecial here because we're actually invoking the exceptions
+    // constructor here.
+    bc = Bytecodes::_invokespecial;
   }
 
   assert(bc != Bytecodes::_illegal, "not initialized");
