@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007, 2020, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007, 2021, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,6 +25,7 @@
 
 package com.sun.tools.javap;
 
+import java.io.Console;
 import java.io.EOFException;
 import java.io.FileNotFoundException;
 import java.io.FilterInputStream;
@@ -39,6 +40,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.Charset;
 import java.nio.file.NoSuchFileException;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
@@ -395,8 +397,31 @@ public class JavapTask implements DisassemblerTool.DisassemblerTask, Messages {
         setLog(getPrintWriterForStream(s));
     }
 
+    private final static Charset nativeCharset;
+    static {
+        Charset cs = Charset.defaultCharset();
+        Console cons;
+        if ((cons = System.console()) != null) {
+            cs = cons.charset();
+        } else {
+            try {
+                cs = Charset.forName(System.getProperty("native.encoding"));
+            } catch (Exception e) {
+            }
+        }
+        nativeCharset = cs;
+    }
+
     private static PrintWriter getPrintWriterForStream(OutputStream s) {
-        return new PrintWriter(s == null ? System.err : s, true);
+        if (s == null) {
+            return new PrintWriter(System.err, true, nativeCharset);
+        } else {
+            if (s.equals((OutputStream)System.err) || s.equals((OutputStream)System.out)) {
+                return new PrintWriter(s, true, nativeCharset);
+            } else {
+                return new PrintWriter(s, true);
+            }
+        }
     }
 
     private static PrintWriter getPrintWriterForWriter(Writer w) {
