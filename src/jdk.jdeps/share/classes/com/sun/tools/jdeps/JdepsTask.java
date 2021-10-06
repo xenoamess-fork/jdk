@@ -506,7 +506,7 @@ class JdepsTask {
 
     private final static Charset nativeCharset;
     static {
-        Charset cs = Charset.defaultCharset();
+        Charset cs;
         Console cons;
         if ((cons = System.console()) != null) {
             cs = cons.charset();
@@ -514,6 +514,7 @@ class JdepsTask {
             try {
                 cs = Charset.forName(System.getProperty("native.encoding"));
             } catch (Exception e) {
+                cs = Charset.defaultCharset();
             }
         }
         nativeCharset = cs;

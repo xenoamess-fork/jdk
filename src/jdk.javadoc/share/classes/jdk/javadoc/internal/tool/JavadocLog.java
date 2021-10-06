@@ -172,7 +172,7 @@ public class JavadocLog extends Log implements Reporter {
 
     private final static Charset nativeCharset;
     static {
-        Charset cs = Charset.defaultCharset();
+        Charset cs;
         Console cons;
         if ((cons = System.console()) != null) {
             cs = cons.charset();
@@ -180,6 +180,7 @@ public class JavadocLog extends Log implements Reporter {
             try {
                 cs = Charset.forName(System.getProperty("native.encoding"));
             } catch (Exception e) {
+                cs = Charset.defaultCharset();
             }
         }
         nativeCharset = cs;
