@@ -251,7 +251,7 @@ public class WeakHashMap<K,V>
      * @since   1.3
      */
     public WeakHashMap(Map<? extends K, ? extends V> m) {
-        this(Math.max((int) ((float)m.size() / DEFAULT_LOAD_FACTOR + 1.0F),
+        this(Math.max((int) Math.ceil(m.size() / DEFAULT_LOAD_FACTOR),
                 DEFAULT_INITIAL_CAPACITY),
              DEFAULT_LOAD_FACTOR);
         putAll(m);

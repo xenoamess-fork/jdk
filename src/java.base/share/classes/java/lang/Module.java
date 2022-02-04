@@ -1133,7 +1133,7 @@ public final class Module implements AnnotatedElement {
         boolean isBootLayer = (ModuleLayer.boot() == null);
 
         int numModules = cf.modules().size();
-        int cap = (int)(numModules / 0.75f + 1.0f);
+        int cap = (int)Math.ceil(numModules / 0.75f);
         Map<String, Module> nameToModule = new HashMap<>(cap);
 
         // to avoid repeated lookups and reduce iteration overhead, we create

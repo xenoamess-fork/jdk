@@ -68,7 +68,7 @@ public class ConstantDirectoryOptimalCapacity {
     private static void test(Class<? extends Enum> e) {
         Enum.valueOf(e, "V0"); // trigger init of enumConstantDirectory
 
-        int initialCapacity = (int)(e.getEnumConstants().length / 0.75f) + 1;
+        int initialCapacity = (int)Math.ceil(e.getEnumConstants().length / 0.75f);
         OptimalCapacity.ofHashMap(e.getClass(), e, "enumConstantDirectory",
             initialCapacity);
     }
